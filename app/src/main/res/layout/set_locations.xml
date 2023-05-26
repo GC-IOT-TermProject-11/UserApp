@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?><!-- main_layout.xml -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <Button
+        android:id="@+id/currentLocationButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="200dp"
+        android:layout_marginBottom="16dp"
+        android:text="현재 위치 확인" />
+
+    <TextView
+        android:id="@+id/resultTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/currentLocationButton"
+        android:text="현재 위치:"
+        android:textSize="18sp" />
+
+    <View
+        android:id="@+id/hr"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/resultTextView"
+        android:layout_marginVertical="5dp"
+        android:background="@color/gray" />
+
+    <TextView
+        android:id="@+id/destination"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/hr"
+        android:text="목적지를 입력하세요." />
+
+    <EditText
+        android:id="@+id/destTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/destination"
+        android:hint="ex) 404" />
+
+    <Button
+        android:id="@+id/sendDestination"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/destination"
+        android:layout_toRightOf="@+id/destTextView"
+        android:layout_marginBottom="16dp"
+        android:text="입력" />
+    <View
+        android:id="@+id/hr2"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/destTextView"
+        android:layout_marginVertical="5dp"
+        android:background="@color/gray" />
+    <ListView
+        android:layout_below="@+id/hr2"
+        android:id="@+id/listView"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</RelativeLayout>
