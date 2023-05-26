@@ -7,6 +7,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,14 +18,17 @@ import androidx.core.content.ContextCompat;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
-import java.io.IOException;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     private WifiManager wifiManager;
     private Button scanButton;
-
+    private TextView currLocation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,13 +80,6 @@ public class MainActivity extends AppCompatActivity {
 
         wifiManager.startScan();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         List<ScanResult> scanResults = wifiManager.getScanResults();
@@ -113,16 +110,8 @@ public class MainActivity extends AppCompatActivity {
         String jsonData = dataObject.toString();
 
         sendDataToServer(jsonData);
-//        //스캔되는지 테스트
-//        for (ScanResult result : scanResults) {
-//            String ssid = result.SSID;
-//            String bssid = result.BSSID;
-//            int signalStrength = result.level;
-//            // 여기에서 원하는 출력 형태로 조정할 수 있습니다.
-//            String output = "BSSID: " + bssid + ", SSID: " + ssid + ", Signal Strength: " + signalStrength + "dBm";
-//            System.out.println(output);
-//        }
     }
+
     private void sendDataToServer(String jsonData) {
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
@@ -133,18 +122,40 @@ public class MainActivity extends AppCompatActivity {
                 .post(requestBody)
                 .build();
 
-        try {
-            Response response = client.newCall(request).execute();
-            if (response.isSuccessful()) {
-                String responseBody = response.body().string();
-                // 서버 응답 처리
-                // ...
-            } else {
-                // 서버 응답 실패 처리
-                // ...
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    // 서버 응답 처리
+                    runOnUiThread(() -> {
+                        try {
+                            JSONObject json = new JSONObject(responseBody);
+                            String predictions = json.getString("predictions");
+                            String serverResponse = predictions;
+                            currLocation=findViewById(R.id.resultTextView);
+                            currLocation.setText(serverResponse);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            // JSON 파싱 오류 처리
+                        }
+                    });
+                } else {
+                    // 서버 응답 실패 처리
+                    runOnUiThread(() -> {
+                        Toast.makeText(MainActivity.this, "Failed to send data to server.", Toast.LENGTH_SHORT).show();
+                    });
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+                // 서버 요청 실패 처리
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "Failed to send data to server.", Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
     }
 }
