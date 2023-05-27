@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         RequestBody requestBody = RequestBody.create(mediaType, jsonData);
 
         Request request = new Request.Builder()
-                .url("http://your-server-url/api") // 서버 URL 입력
+                .url("http://gyuwon.pythonanywhere.com/predict") // 서버 URL 입력
                 .post(requestBody)
                 .build();
 
@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
                             JSONObject json = new JSONObject(responseBody);
                             String predictions = json.getString("predictions");
                             String serverResponse = predictions;
+                            serverResponse = serverResponse.replaceAll("[^0-9]", "");
                             currLocation=findViewById(R.id.resultTextView);
                             currLocation.setText(serverResponse);
                         } catch (JSONException e) {
