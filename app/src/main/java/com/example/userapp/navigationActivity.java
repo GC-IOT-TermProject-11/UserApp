@@ -1,20 +1,18 @@
 package com.example.userapp;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
+import android.os.PersistableBundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,6 +20,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -31,58 +31,27 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
-
-    private static final int PERMISSIONS_REQUEST_CODE = 1;
-
+public class navigationActivity extends AppCompatActivity {
     private WifiManager wifiManager;
-    private Button scanBtn;
-    private Button sendDestinationBtn;
     private TextView currLocation;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.set_locations);
 
-        scanBtn = findViewById(R.id.currentLocationButton);
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.navigation);
+
         wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
 
-        scanBtn.setOnClickListener(new View.OnClickListener() {
+        //5초마다 와이파이 스캔 및 서버에 현위치 전송
+        Timer timer =new Timer();
+        TimerTask task = new TimerTask() {
             @Override
-            public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(MainActivity.this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            PERMISSIONS_REQUEST_CODE);
-                } else {
-                    scanWifiNetworks();
-                }
-            }
-        });
-
-        //send 버튼 클릭시 서버로 현재 위치와 목적지 전송, navigationActivity로 전환
-        sendDestinationBtn =findViewById(R.id.sendDestination);
-        sendDestinationBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),navigationActivity.class);
-                startActivity(intent);
-            }
-        });
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            public void run() {
                 scanWifiNetworks();
-            } else {
-                Toast.makeText(this, "Permission denied. Cannot scan Wi-Fi networks.", Toast.LENGTH_SHORT).show();
             }
-        }
+        };
+        timer.scheduleAtFixedRate(task, 0,5000);
     }
 
     private void scanWifiNetworks() {
@@ -147,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                             String predictions = json.getString("predictions");
                             String serverResponse = predictions;
                             serverResponse = serverResponse.replaceAll("[^0-9]", "");
-                            currLocation = findViewById(R.id.resultTextView);
+                            currLocation = findViewById(R.id.currentLocaiton);
                             currLocation.setText(serverResponse);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -157,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     // 서버 응답 실패 처리
                     runOnUiThread(() -> {
-                        Toast.makeText(MainActivity.this, "Failed to send data to server.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(navigationActivity.this, "Failed to send data to server.", Toast.LENGTH_SHORT).show();
                     });
                 }
             }
@@ -167,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
                 // 서버 요청 실패 처리
                 runOnUiThread(() -> {
-                    Toast.makeText(MainActivity.this, "Failed to send data to server.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(navigationActivity.this, "Failed to send data to server.", Toast.LENGTH_SHORT).show();
                 });
             }
         });
