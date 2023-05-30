@@ -99,17 +99,20 @@ public class MainActivity extends AppCompatActivity {
 
         JSONArray wifiArray = new JSONArray();
         for (ScanResult result : scanResults) {
-            String bssid = result.BSSID;
-            int signalStrength = result.level;
-
-            JSONObject wifiObject = new JSONObject();
-            try {
-                wifiObject.put("BSSID", bssid);
-                wifiObject.put("SignalStrength", signalStrength);
-                wifiArray.put(wifiObject);
-            } catch (JSONException e) {
-                e.printStackTrace();
+            if(result.SSID.equalsIgnoreCase("GC_free_WiFi")){
+                String bssid = result.BSSID;
+                int signalStrength = result.level;
+                System.out.println(bssid);
+                JSONObject wifiObject = new JSONObject();
+                try {
+                    wifiObject.put("BSSID", bssid);
+                    wifiObject.put("RSSI", signalStrength);
+                    wifiArray.put(wifiObject);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
+
         }
 
         JSONObject dataObject = new JSONObject();
@@ -121,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 전송할 데이터를 JSON 형식으로 생성
         String jsonData = dataObject.toString();
-
+        System.out.println(jsonData);
         sendDataToServer(jsonData);
     }
 
