@@ -74,7 +74,7 @@ public class navigationActivity extends AppCompatActivity {
             JSONObject wifiObject = new JSONObject();
             try {
                 wifiObject.put("BSSID", bssid);
-                wifiObject.put("SignalStrength", signalStrength);
+                wifiObject.put("RSSI", signalStrength);
                 wifiArray.put(wifiObject);
             } catch (JSONException e) {
                 e.printStackTrace();
