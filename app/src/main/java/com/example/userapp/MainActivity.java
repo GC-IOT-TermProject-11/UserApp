@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         sendDestinationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String dest = (String) destination.getText();
+                String dest = ""+destination.getText();
                 JSONObject dataObject = new JSONObject();
                 try {
                     dataObject.put("dest",dest);
@@ -78,8 +78,10 @@ public class MainActivity extends AppCompatActivity {
                 }
                 String jsonData = dataObject.toString();
                 sendDestinationToServer(jsonData);
-                Intent intent = new Intent(getApplicationContext(), navigationActivity.class);
-                startActivity(intent);
+
+                // 서버로부터 데이터 전송이 안돼서 앱이 중간에 꺼지는 걸 방지 하기 위해 일단 주석 처리
+//                Intent intent = new Intent(getApplicationContext(), navigationActivity.class);
+//                startActivity(intent);
             }
         });
     }
@@ -113,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
             if (result.SSID.equalsIgnoreCase("GC_free_WiFi")) {
                 String bssid = result.BSSID;
                 int signalStrength = result.level;
-                System.out.println(bssid);
+//                System.out.println(bssid);
                 JSONObject wifiObject = new JSONObject();
                 try {
                     wifiObject.put("BSSID", bssid);
@@ -193,6 +195,8 @@ public class MainActivity extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(mediaType, destination);
+
+        System.out.println(destination);
 
         Request request = new Request.Builder()
                 .url("http://gyuwon.pythonanywhere.com/findpath") // 서버 URL 입력
