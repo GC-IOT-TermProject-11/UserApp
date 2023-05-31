@@ -41,5 +41,12 @@
         android:textAlignment="center"
         android:textSize="40dp" />
 
-
+    <TextView
+        android:id="@+id/path"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="경로: "
+        android:textAlignment="center"
+        android:textSize="20dp" />
 </LinearLayout>

@@ -1,6 +1,7 @@
 package com.example.userapp;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
@@ -34,12 +35,17 @@ import okhttp3.Response;
 public class navigationActivity extends AppCompatActivity {
     private WifiManager wifiManager;
     private TextView currLocation;
-
+    private TextView path;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.navigation);
+
+        //mainActivity에서 넘어온 경로를 출력
+        Intent pathIntent = getIntent();
+        path = findViewById(R.id.path);
+        path.setText(pathIntent.getStringExtra("path"));
 
         wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
 
@@ -117,7 +123,7 @@ public class navigationActivity extends AppCompatActivity {
                             String serverResponse = predictions;
                             serverResponse = serverResponse.replaceAll("[^0-9]", "");
                             currLocation = findViewById(R.id.currentLocaiton);
-                            currLocation.setText(serverResponse);
+                            currLocation.setText("현 위치: "+serverResponse);
                         } catch (JSONException e) {
                             e.printStackTrace();
                             // JSON 파싱 오류 처리

@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private Button scanBtn;
     private Button sendDestinationBtn;
     private TextView currLocation;
+    private TextView destination;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,11 +64,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //send 버튼 클릭시 서버로 현재 위치와 목적지 전송, navigationActivity로 전환
-        sendDestinationBtn =findViewById(R.id.sendDestination);
-        sendDestinationBtn.setOnClickListener(new View.OnClickListener(){
+        sendDestinationBtn = findViewById(R.id.sendDestination);
+        destination = findViewById(R.id.destTextView);
+        sendDestinationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),navigationActivity.class);
+                String dest = (String) destination.getText();
+                sendDestinationToServer(dest);
+                Intent intent = new Intent(getApplicationContext(), navigationActivity.class);
                 startActivity(intent);
             }
         });
@@ -99,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
         JSONArray wifiArray = new JSONArray();
         for (ScanResult result : scanResults) {
-            if(result.SSID.equalsIgnoreCase("GC_free_WiFi")){
+            if (result.SSID.equalsIgnoreCase("GC_free_WiFi")) {
                 String bssid = result.BSSID;
                 int signalStrength = result.level;
                 System.out.println(bssid);
@@ -125,10 +129,11 @@ public class MainActivity extends AppCompatActivity {
         // 전송할 데이터를 JSON 형식으로 생성
         String jsonData = dataObject.toString();
         System.out.println(jsonData);
-        sendDataToServer(jsonData);
+        sendWiFiDataToServer(jsonData);
     }
 
-    private void sendDataToServer(String jsonData) {
+    //현재 위치 센싱하여 서버로 와이파이 리스트 전송
+    private void sendWiFiDataToServer(String jsonData) {
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(mediaType, jsonData);
@@ -160,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     // 서버 응답 실패 처리
                     runOnUiThread(() -> {
-                        Toast.makeText(MainActivity.this, "Failed to send data to server.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Failed to send WiFi list to server.", Toast.LENGTH_SHORT).show();
                     });
                 }
             }
@@ -170,9 +175,52 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
                 // 서버 요청 실패 처리
                 runOnUiThread(() -> {
-                    Toast.makeText(MainActivity.this, "Failed to send data to server.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Failed to send WiFi list to server.", Toast.LENGTH_SHORT).show();
                 });
             }
         });
     }
+
+    //목적지 입력하여 서버로 전송
+    private void sendDestinationToServer(String destination) {
+        OkHttpClient client = new OkHttpClient();
+        MediaType mediaType = MediaType.parse("text/plain; charset=utf-8");
+        RequestBody requestBody = RequestBody.create(mediaType, destination);
+
+        Request request = new Request.Builder()
+                .url("http://gyuwon.pythonanywhere.com/findpath") // 서버 URL 입력
+                .post(requestBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    //서버로부터 전달 받은 응답(경로)를 intent에 담아 navigationActivity로 넘겨줌
+                    runOnUiThread(() -> {
+                        String path= responseBody;
+                        Intent pathIntent = new Intent(getApplicationContext(),navigationActivity.class);
+                        pathIntent.putExtra("path",path);
+                        startActivity(pathIntent);
+                    });
+                } else {
+                    // 서버 응답 실패 처리
+                    runOnUiThread(() -> {
+                        Toast.makeText(MainActivity.this, "Failed to send destination to server.", Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+                // 서버 요청 실패 처리
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "Failed to send destination to server.", Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
+
 }
