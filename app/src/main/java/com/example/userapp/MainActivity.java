@@ -70,7 +70,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String dest = (String) destination.getText();
-                sendDestinationToServer(dest);
+                JSONObject dataObject = new JSONObject();
+                try {
+                    dataObject.put("dest",dest);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                String jsonData = dataObject.toString();
+                sendDestinationToServer(jsonData);
                 Intent intent = new Intent(getApplicationContext(), navigationActivity.class);
                 startActivity(intent);
             }
@@ -184,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
     //목적지 입력하여 서버로 전송
     private void sendDestinationToServer(String destination) {
         OkHttpClient client = new OkHttpClient();
-        MediaType mediaType = MediaType.parse("text/plain; charset=utf-8");
+        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(mediaType, destination);
 
         Request request = new Request.Builder()
@@ -199,10 +206,17 @@ public class MainActivity extends AppCompatActivity {
                     String responseBody = response.body().string();
                     //서버로부터 전달 받은 응답(경로)를 intent에 담아 navigationActivity로 넘겨줌
                     runOnUiThread(() -> {
-                        String path= responseBody;
-                        Intent pathIntent = new Intent(getApplicationContext(),navigationActivity.class);
-                        pathIntent.putExtra("path",path);
-                        startActivity(pathIntent);
+                        try {
+                            JSONObject json = new JSONObject(responseBody);
+                            String path = json.getString("path");
+                            String serverResponse = path;
+                            serverResponse = serverResponse.replaceAll("[^0-9]", "");
+                            Intent pathIntent = new Intent(getApplicationContext(), navigationActivity.class);
+                            pathIntent.putExtra("path", serverResponse);
+                            startActivity(pathIntent);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
                     });
                 } else {
                     // 서버 응답 실패 처리
