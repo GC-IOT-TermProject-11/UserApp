@@ -192,14 +192,22 @@ public class MainActivity extends AppCompatActivity {
 
     //목적지 입력하여 서버로 전송
     private void sendDestinationToServer(String destination) {
+        String currentLocation = currLocation.getText().toString(); // 현재 위치 가져오기
+
+        JSONObject dataObject = new JSONObject();
+        try {
+            dataObject.put("currentLocation", currentLocation);
+            dataObject.put("destination", destination);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
-        RequestBody requestBody = RequestBody.create(mediaType, destination);
-
-        System.out.println(destination);
+        RequestBody requestBody = RequestBody.create(mediaType, dataObject.toString());
 
         Request request = new Request.Builder()
-                .url("http://gyuwon.pythonanywhere.com/findpath") // 서버 URL 입력
+                .url("http://gyuwon.pythonanywhere.com/pathfind") // 서버 URL 입력
                 .post(requestBody)
                 .build();
 
@@ -208,15 +216,16 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-                    //서버로부터 전달 받은 응답(경로)를 intent에 담아 navigationActivity로 넘겨줌
+                    // 서버 응답 처리
                     runOnUiThread(() -> {
                         try {
                             JSONObject json = new JSONObject(responseBody);
-                            String path = json.getString("path");
+                            String path = json.getString("shortestPath");
                             String serverResponse = path;
+                            System.out.println("path is "+ path);
                             serverResponse = serverResponse.replaceAll("[^0-9]", "");
                             Intent pathIntent = new Intent(getApplicationContext(), navigationActivity.class);
-                            pathIntent.putExtra("path", serverResponse);
+                            pathIntent.putExtra("shortestPath", serverResponse);
                             startActivity(pathIntent);
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
