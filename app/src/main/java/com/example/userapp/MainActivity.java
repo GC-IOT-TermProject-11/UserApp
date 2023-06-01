@@ -70,14 +70,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String dest = ""+destination.getText();
-                JSONObject dataObject = new JSONObject();
-                try {
-                    dataObject.put("dest",dest);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                String jsonData = dataObject.toString();
-                sendDestinationToServer(jsonData);
+//                JSONObject dataObject = new JSONObject();
+//                try {
+//                    dataObject.put("dest",dest);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//                String jsonData = dataObject.toString();
+                sendDestinationToServer(dest);
 
                 // 서버로부터 데이터 전송이 안돼서 앱이 중간에 꺼지는 걸 방지 하기 위해 일단 주석 처리
 //                Intent intent = new Intent(getApplicationContext(), navigationActivity.class);
