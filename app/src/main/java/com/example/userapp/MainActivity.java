@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        System.out.println("sendToServer"+dataObject);
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
         RequestBody requestBody = RequestBody.create(mediaType, dataObject.toString());
