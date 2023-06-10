@@ -3,6 +3,7 @@ package com.example.userapp;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -32,6 +33,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
+
+    MediaPlayer mediaPlayer;
 
     private static final int PERMISSIONS_REQUEST_CODE = 1;
 
@@ -70,6 +73,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String dest = ""+destination.getText();
+
+                mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.strat); // 안내 시작 음성 재생
+                mediaPlayer.start();
+
 //                JSONObject dataObject = new JSONObject();
 //                try {
 //                    dataObject.put("dest",dest);
