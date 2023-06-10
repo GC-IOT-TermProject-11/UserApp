@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 String dest = ""+destination.getText();
 
                 mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.strat); // 안내 시작 음성 재생
-                mediaPlayer.start();
+                mediaPlayer.start(); // 안내 음성 시작
 
 //                JSONObject dataObject = new JSONObject();
 //                try {
