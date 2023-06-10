@@ -233,6 +233,7 @@ public class MainActivity extends AppCompatActivity {
                             serverResponse = serverResponse.replaceAll("[^0-9]", "");
                             Intent pathIntent = new Intent(getApplicationContext(), navigationActivity.class);
                             pathIntent.putExtra("shortestPath", serverResponse);
+                            pathIntent.putExtra("destination", destination);
                             startActivity(pathIntent);
                         } catch (JSONException e) {
                             throw new RuntimeException(e);

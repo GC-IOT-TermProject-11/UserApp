@@ -36,6 +36,7 @@ public class navigationActivity extends AppCompatActivity {
     private WifiManager wifiManager;
     private TextView currLocation;
     private TextView path;
+    private TextView Destination;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,7 +47,8 @@ public class navigationActivity extends AppCompatActivity {
         Intent pathIntent = getIntent();
         path = findViewById(R.id.path);
         path.setText(pathIntent.getStringExtra("path"));
-
+        Destination = findViewById(R.id.destination);
+        Destination.setText("목적지: " + pathIntent.getStringExtra("destination"));
         wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
 
         //5초마다 와이파이 스캔 및 서버에 현위치 전송
