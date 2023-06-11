@@ -8,12 +8,19 @@
     tools:context=".MainActivity">
 
     <ImageView
-        android:id="@+id/direction"
+        android:id="@+id/directionImage"
         android:layout_width="360dp"
         android:layout_height="360dp"
         android:layout_gravity="center"
         android:layout_marginTop="20dp" />
-
+    <TextView
+        android:id="@+id/directionText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="방향"
+        android:textAlignment="center"
+        android:textSize="40dp" />
     <TextView
         android:id="@+id/distance"
         android:layout_width="wrap_content"

@@ -37,6 +37,8 @@ public class navigationActivity extends AppCompatActivity {
     private TextView currLocation;
     private TextView path;
     private TextView Destination;
+    private TextView distanceView;
+    private TextView directionView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -108,7 +110,7 @@ public class navigationActivity extends AppCompatActivity {
         RequestBody requestBody = RequestBody.create(mediaType, jsonData);
 
         Request request = new Request.Builder()
-                .url("http://gyuwon.pythonanywhere.com/predict") // 서버 URL 입력
+                .url("http://gyuwon.pythonanywhere.com/navigate") // 서버 URL 입력
                 .post(requestBody)
                 .build();
 
@@ -122,10 +124,21 @@ public class navigationActivity extends AppCompatActivity {
                         try {
                             JSONObject json = new JSONObject(responseBody);
                             String predictions = json.getString("predictions");
-                            String serverResponse = predictions;
-                            serverResponse = serverResponse.replaceAll("[^0-9]", "");
+                            String predictionsResponse = predictions;
+                            predictionsResponse = predictionsResponse.replaceAll("[^0-9]", "");
                             currLocation = findViewById(R.id.currentLocaiton);
-                            currLocation.setText("현 위치: "+serverResponse);
+                            currLocation.setText("현 위치: "+predictionsResponse);
+
+                            String distance = json.getString("distance");
+                            String distanceResponse = predictions;
+                            distanceResponse = distanceResponse.replaceAll("[^0-9]", "");
+                            distanceView = findViewById(R.id.distance);
+                            distanceView.setText("거리: "+distanceResponse+"m");
+
+                            String direction = json.getString("direction");
+                            directionView = findViewById(R.id.directionText);
+                            directionView.setText("방향: "+direction);
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                             // JSON 파싱 오류 처리
