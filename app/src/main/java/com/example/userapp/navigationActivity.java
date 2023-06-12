@@ -130,10 +130,8 @@ public class navigationActivity extends AppCompatActivity {
                             currLocation.setText("현 위치: "+predictionsResponse);
 
                             String distance = json.getString("distance");
-                            String distanceResponse = distance;
-                            distanceResponse = distanceResponse.replaceAll("[^0-9]", "");
                             distanceView = findViewById(R.id.distance);
-                            distanceView.setText("거리: "+distanceResponse+"m");
+                            distanceView.setText("거리: "+distance+"m");
 
                             String direction = json.getString("direction");
                             directionView = findViewById(R.id.directionText);

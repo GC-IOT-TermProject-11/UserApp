@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String dest = ""+destination.getText();
-
+                System.out.println(dest);
                 mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.strat); // 안내 시작 음성 재생
                 mediaPlayer.start(); // 안내 음성 시작
 
