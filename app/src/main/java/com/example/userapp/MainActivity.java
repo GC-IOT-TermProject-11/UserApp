@@ -75,6 +75,13 @@ public class MainActivity extends AppCompatActivity {
                 String dest = ""+destination.getText();
                 System.out.println(dest);
                 mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.strat); // 안내 시작 음성 재생
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        // 음악 재생이 끝났을 때 sendToServer() 메소드 호출
+                        sendDestinationToServer(dest);
+                    }
+                });
                 mediaPlayer.start(); // 안내 음성 시작
 
 //                JSONObject dataObject = new JSONObject();
@@ -84,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 //                    e.printStackTrace();
 //                }
 //                String jsonData = dataObject.toString();
-                sendDestinationToServer(dest);
+
 
                 // 서버로부터 데이터 전송이 안돼서 앱이 중간에 꺼지는 걸 방지 하기 위해 일단 주석 처리
 //                Intent intent = new Intent(getApplicationContext(), navigationActivity.class);

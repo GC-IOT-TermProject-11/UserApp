@@ -3,6 +3,7 @@ package com.example.userapp;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -35,6 +36,8 @@ import okhttp3.Response;
 public class navigationActivity extends AppCompatActivity {
     private WifiManager wifiManager;
     private TextView currLocation;
+
+    MediaPlayer mediaPlayer;
     private TextView path;
     private TextView Destination;
     private TextView distanceView;
@@ -136,6 +139,18 @@ public class navigationActivity extends AppCompatActivity {
                             String direction = json.getString("direction");
                             directionView = findViewById(R.id.directionText);
                             directionView.setText("방향: "+direction);
+                            if(direction.equalsIgnoreCase("직진")) {
+                                mediaPlayer = MediaPlayer.create(navigationActivity.this, R.raw.straight); // 안내 시작 음성 재생
+                                mediaPlayer.start(); // 안내 음성 시작
+                            }
+                            if(direction.equalsIgnoreCase("우회전")) {
+                                mediaPlayer = MediaPlayer.create(navigationActivity.this, R.raw.right); // 안내 시작 음성 재생
+                                mediaPlayer.start(); // 안내 음성 시작
+                            }
+                            if(direction.equalsIgnoreCase("좌회전")) {
+                                mediaPlayer = MediaPlayer.create(navigationActivity.this, R.raw.left); // 안내 시작 음성 재생
+                                mediaPlayer.start(); // 안내 음성 시작
+                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
