@@ -195,6 +195,11 @@ public class navigationActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed(){
+        finish(); // 뒤로가기 버튼이 눌렸을때 종료
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
 
