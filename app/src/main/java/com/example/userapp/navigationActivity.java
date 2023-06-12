@@ -130,7 +130,7 @@ public class navigationActivity extends AppCompatActivity {
                             currLocation.setText("현 위치: "+predictionsResponse);
 
                             String distance = json.getString("distance");
-                            String distanceResponse = predictions;
+                            String distanceResponse = distance;
                             distanceResponse = distanceResponse.replaceAll("[^0-9]", "");
                             distanceView = findViewById(R.id.distance);
                             distanceView.setText("거리: "+distanceResponse+"m");
@@ -147,7 +147,7 @@ public class navigationActivity extends AppCompatActivity {
                 } else {
                     // 서버 응답 실패 처리
                     runOnUiThread(() -> {
-                        Toast.makeText(navigationActivity.this, "Failed to send data to server.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(navigationActivity.this, "Failed to receive data from server.", Toast.LENGTH_SHORT).show();
                     });
                 }
             }
