@@ -37,6 +37,8 @@ public class navigationActivity extends AppCompatActivity {
     private WifiManager wifiManager;
     private TextView currLocation;
 
+    private Timer timer;
+
     MediaPlayer mediaPlayer;
     private TextView path;
     private TextView Destination;
@@ -57,7 +59,7 @@ public class navigationActivity extends AppCompatActivity {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
 
         //5초마다 와이파이 스캔 및 서버에 현위치 전송
-        Timer timer =new Timer();
+        timer =new Timer();
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -126,6 +128,22 @@ public class navigationActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         try {
                             JSONObject json = new JSONObject(responseBody);
+                            String respon=json.getString("response");
+                            if(respon.equalsIgnoreCase("finish"))
+                            {
+                                mediaPlayer = MediaPlayer.create(navigationActivity.this, R.raw.exit); // 안내 시작 음성 재생
+                                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        // 음악 재생이 끝났을 때 액티비티 종료() 메소드 호출
+                                        Intent intent = new Intent(navigationActivity.this, MainActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                });
+                                mediaPlayer.start(); // 안내 음성 시작
+
+                            }
                             String predictions = json.getString("predictions");
                             String predictionsResponse = predictions;
                             predictionsResponse = predictionsResponse.replaceAll("[^0-9]", "");
@@ -174,5 +192,18 @@ public class navigationActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+
+        timer.cancel(); // Timer 객체 종료
     }
 }

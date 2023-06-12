@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         // 음악 재생이 끝났을 때 sendToServer() 메소드 호출
+                        mediaPlayer.stop(); // 안내 음성이 끝나면 음악 재생 멈춤
                         sendDestinationToServer(dest);
                     }
                 });
