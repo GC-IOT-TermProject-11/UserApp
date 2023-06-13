@@ -8,7 +8,10 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,13 +39,26 @@ public class MainActivity extends AppCompatActivity {
 
     MediaPlayer mediaPlayer;
 
+    private String mSpinner1Value = "";
+
     private static final int PERMISSIONS_REQUEST_CODE = 1;
 
     private WifiManager wifiManager;
     private Button scanBtn;
     private Button sendDestinationBtn;
     private TextView currLocation;
-    private TextView destination;
+    private Spinner destination;
+
+    String[] class_ = {"401", "402", "403", "404", "405", "406", "407", "408", "409", "410",
+            "411", "412", "413", "414", "415", "416", "417", "418", "419", "420",
+            "421", "422", "423", "424", "425", "426", "427", "428", "429", "430",
+            "431", "432", "433", "434", "435","4아르테크네","4엘레베이터1","4엘레베이터2","4엘레베이터3","4야외 테라스",
+            "501", "502", "503", "504", "505", "506", "507", "508", "509", "510",
+            "511", "512", "513", "514", "515", "516", "517", "518", "519", "520",
+            "521", "522", "523", "524", "525", "526", "527", "528", "529", "530",
+            "531", "532", "5아르테크네","5엘레베이터1","5엘레베이터2","5엘레베이터3","503큐브","513큐브"
+
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,10 +85,26 @@ public class MainActivity extends AppCompatActivity {
         //send 버튼 클릭시 서버로 현재 위치와 목적지 전송, navigationActivity로 전환
         sendDestinationBtn = findViewById(R.id.sendDestination);
         destination = findViewById(R.id.destTextView);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_spinner_item, class_);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        destination.setAdapter(adapter);
+        destination.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+            @Override
+            public void onItemSelected(AdapterView adapterView, View view, int position, long id){
+                mSpinner1Value = adapterView.getItemAtPosition(position).toString(); // 첫번째 스피너 값 가져오기 층수
+            }
+            @Override
+            public void onNothingSelected(AdapterView adapterView){
+
+            }
+        });
+
         sendDestinationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String dest = ""+destination.getText();
+                String dest = mSpinner1Value;
                 System.out.println(dest);
                 mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.strat); // 안내 시작 음성 재생
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
