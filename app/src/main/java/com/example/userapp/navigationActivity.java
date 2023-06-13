@@ -8,6 +8,7 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,11 +41,12 @@ public class navigationActivity extends AppCompatActivity {
     private Timer timer;
 
     MediaPlayer mediaPlayer;
+
+    private ImageView directionImage;
     private TextView path;
     private TextView Destination;
     private TextView distanceView;
     private TextView directionView;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,8 +54,9 @@ public class navigationActivity extends AppCompatActivity {
 
         //mainActivity에서 넘어온 경로를 출력
         Intent pathIntent = getIntent();
+        directionImage = findViewById(R.id.directionImage);
         path = findViewById(R.id.path);
-        path.setText(pathIntent.getStringExtra("path"));
+        path.setText(pathIntent.getStringExtra("shortestPath"));
         Destination = findViewById(R.id.destination);
         Destination.setText("목적지: " + pathIntent.getStringExtra("destination"));
         wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
@@ -128,8 +131,7 @@ public class navigationActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         try {
                             JSONObject json = new JSONObject(responseBody);
-                            String respon=json.getString("response");
-                            if(respon.equalsIgnoreCase("finish"))
+                            if(json.has("response") && json.getString("response").equalsIgnoreCase("finish"))
                             {
                                 mediaPlayer = MediaPlayer.create(navigationActivity.this, R.raw.exit); // 안내 시작 음성 재생
                                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -140,6 +142,8 @@ public class navigationActivity extends AppCompatActivity {
                                         startActivity(intent);
                                         finish();
                                     }
+
+
                                 });
                                 mediaPlayer.start(); // 안내 음성 시작
 
@@ -151,23 +155,27 @@ public class navigationActivity extends AppCompatActivity {
                             currLocation.setText("현 위치: "+predictionsResponse);
 
                             String distance = json.getString("distance");
+                            float d = Float.parseFloat(distance);
+                            d = Math.round(d * 100) / 100f; // 둘째자리에서 반올림
+                            distance = Float.toString(d);
                             distanceView = findViewById(R.id.distance);
-                            distanceView.setText("거리: "+distance+"m");
+                            distanceView.setText(distance+"m");
 
                             String direction = json.getString("direction");
-                            directionView = findViewById(R.id.directionText);
-                            directionView.setText("방향: "+direction);
                             if(direction.equalsIgnoreCase("직진")) {
                                 mediaPlayer = MediaPlayer.create(navigationActivity.this, R.raw.straight); // 안내 시작 음성 재생
                                 mediaPlayer.start(); // 안내 음성 시작
+                                directionImage.setImageResource(R.drawable.straight); // 사진 변경
                             }
                             if(direction.equalsIgnoreCase("우회전")) {
                                 mediaPlayer = MediaPlayer.create(navigationActivity.this, R.raw.right); // 안내 시작 음성 재생
                                 mediaPlayer.start(); // 안내 음성 시작
+                                directionImage.setImageResource(R.drawable.right_turn); // 사진 변경
                             }
                             if(direction.equalsIgnoreCase("좌회전")) {
                                 mediaPlayer = MediaPlayer.create(navigationActivity.this, R.raw.left); // 안내 시작 음성 재생
                                 mediaPlayer.start(); // 안내 음성 시작
+                                directionImage.setImageResource(R.drawable.left_turn); // 사진 변경
                             }
 
                         } catch (JSONException e) {

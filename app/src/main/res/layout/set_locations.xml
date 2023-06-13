@@ -5,32 +5,44 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
+    <ImageView
+        android:id="@+id/aiImage"
+        android:layout_width="360dp"
+        android:layout_height="300dp"
+        android:background = "@drawable/ai"
+        android:layout_centerHorizontal="true" />
+
     <Button
         android:id="@+id/currentLocationButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/aiImage"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop = "10dp"
         android:layout_marginBottom="16dp"
         android:text="현재 위치 확인" />
-<LinearLayout
-    android:id="@+id/currLocationLayout"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_below="@id/currentLocationButton"
-    android:orientation="horizontal">
-    <TextView
+
+    <LinearLayout
+        android:id="@+id/currLocationLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="현재 위치: "
-        android:textSize="18sp" />
-    <TextView
-        android:id="@+id/resultTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="상단의 버튼을 눌러 현재 위치를 확인하세요."
-        android:textSize="15sp" />
-</LinearLayout>
+        android:layout_below="@id/currentLocationButton"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="현재 위치: "
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/resultTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="상단의 버튼을 눌러 현재 위치를 확인하세요."
+            android:textSize="15sp" />
+    </LinearLayout>
+
     <View
         android:id="@+id/hr"
         android:layout_width="match_parent"
@@ -58,9 +70,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/destination"
-        android:layout_toRightOf="@+id/destTextView"
         android:layout_marginBottom="16dp"
+        android:layout_marginLeft= "20dp"
+        android:layout_toRightOf="@+id/destTextView"
         android:text="입력" />
+
     <View
         android:id="@+id/hr2"
         android:layout_width="match_parent"
@@ -68,5 +82,12 @@
         android:layout_below="@id/destTextView"
         android:layout_marginVertical="5dp"
         android:background="@color/gray" />
+    <ImageView
+        android:id="@+id/aiMap"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background = "@drawable/aimap"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
