@@ -161,6 +161,7 @@ public class navigationActivity extends AppCompatActivity {
                             distanceView = findViewById(R.id.distance);
                             distanceView.setText(distance+"m");
 
+
                             String direction = json.getString("direction");
                             if(direction.equalsIgnoreCase("직진")) {
                                 mediaPlayer = MediaPlayer.create(navigationActivity.this, R.raw.straight); // 안내 시작 음성 재생
