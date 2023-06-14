@@ -48,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/currentLocaiton"
         android:layout_centerHorizontal="true"
-        android:text="경로: "
+        android:text=""
         android:textAlignment="center"
         android:textSize="20dp" />
 

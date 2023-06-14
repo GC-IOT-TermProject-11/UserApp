@@ -56,7 +56,7 @@ public class navigationActivity extends AppCompatActivity {
         Intent pathIntent = getIntent();
         directionImage = findViewById(R.id.directionImage);
         path = findViewById(R.id.path);
-        path.setText(pathIntent.getStringExtra("shortestPath"));
+//        path.setText(pathIntent.getStringExtra("shortestPath"));
         Destination = findViewById(R.id.destination);
         Destination.setText("목적지: " + pathIntent.getStringExtra("destination"));
         wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
@@ -159,7 +159,7 @@ public class navigationActivity extends AppCompatActivity {
                             }
                             String predictions = json.getString("predictions");
                             String predictionsResponse = predictions;
-                            predictionsResponse = predictionsResponse.replaceAll("[^a-zA-Z0-9]", "");
+                            predictionsResponse = predictionsResponse.replaceAll("[\\[\\]\"]", "");
                             currLocation = findViewById(R.id.currentLocaiton);
                             currLocation.setText("현 위치: "+predictionsResponse);
 

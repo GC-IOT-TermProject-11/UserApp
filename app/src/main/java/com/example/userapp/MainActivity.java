@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
                             JSONObject json = new JSONObject(responseBody);
                             String predictions = json.getString("predictions");
                             String serverResponse = predictions;
-                            serverResponse = serverResponse.replaceAll("[^a-zA-Z0-9]", "");
+                            serverResponse = serverResponse.replaceAll("[\\[\\]\"]", "");
                             currLocation = findViewById(R.id.resultTextView);
                             currLocation.setText(serverResponse);
                         } catch (JSONException e) {
