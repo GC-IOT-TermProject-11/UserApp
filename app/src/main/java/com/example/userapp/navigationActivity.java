@@ -61,56 +61,66 @@ public class navigationActivity extends AppCompatActivity {
         Destination.setText("목적지: " + pathIntent.getStringExtra("destination"));
         wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
 
-        //5초마다 와이파이 스캔 및 서버에 현위치 전송
-        timer =new Timer();
+        // 5초마다 와이파이 스캔 및 서버에 현위치 전송
+        timer = new Timer();
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
                 scanWifiNetworks();
             }
         };
-        timer.scheduleAtFixedRate(task, 0,5000);
+        timer.scheduleAtFixedRate(task, 0, 5000);
     }
 
     private void scanWifiNetworks() {
-        if (!wifiManager.isWifiEnabled()) {
-            Toast.makeText(this, "Wi-Fi is disabled. Enable Wi-Fi and try again.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        // 와이파이 스캔 작업을 수행하는 스레드 생성
+        Thread wifiScanThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (!wifiManager.isWifiEnabled()) {
+                    runOnUiThread(() -> Toast.makeText(navigationActivity.this, "Wi-Fi is disabled. Enable Wi-Fi and try again.", Toast.LENGTH_SHORT).show());
+                    return;
+                }
 
-        wifiManager.startScan();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        List<ScanResult> scanResults = wifiManager.getScanResults();
+                wifiManager.startScan();
+                if (ActivityCompat.checkSelfPermission(navigationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                List<ScanResult> scanResults = wifiManager.getScanResults();
 
-        JSONArray wifiArray = new JSONArray();
-        for (ScanResult result : scanResults) {
-            String bssid = result.BSSID;
-            int signalStrength = result.level;
+                JSONArray wifiArray = new JSONArray();
+                for (ScanResult result : scanResults) {
+                    String bssid = result.BSSID;
+                    int signalStrength = result.level;
 
-            JSONObject wifiObject = new JSONObject();
-            try {
-                wifiObject.put("BSSID", bssid);
-                wifiObject.put("RSSI", signalStrength);
-                wifiArray.put(wifiObject);
-            } catch (JSONException e) {
-                e.printStackTrace();
+                    JSONObject wifiObject = new JSONObject();
+                    try {
+                        wifiObject.put("BSSID", bssid);
+                        wifiObject.put("RSSI", signalStrength);
+                        wifiArray.put(wifiObject);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                JSONObject dataObject = new JSONObject();
+                try {
+                    dataObject.put("wifiList", wifiArray);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                // 전송할 데이터를 JSON 형식으로 생성
+                String jsonData = dataObject.toString();
+
+                sendDataToServer(jsonData);
             }
-        }
+        });
 
-        JSONObject dataObject = new JSONObject();
-        try {
-            dataObject.put("wifiList", wifiArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        // 전송할 데이터를 JSON 형식으로 생성
-        String jsonData = dataObject.toString();
-
-        sendDataToServer(jsonData);
+        // 스레드 시작
+        wifiScanThread.start();
     }
+
 
     private void sendDataToServer(String jsonData) {
         OkHttpClient client = new OkHttpClient();
@@ -133,6 +143,7 @@ public class navigationActivity extends AppCompatActivity {
                             JSONObject json = new JSONObject(responseBody);
                             if(json.has("response") && json.getString("response").equalsIgnoreCase("finish"))
                             {
+                                directionImage.setImageResource(R.drawable.arrival); // 사진 변경
                                 mediaPlayer = MediaPlayer.create(navigationActivity.this, R.raw.exit); // 안내 시작 음성 재생
                                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                                     @Override
@@ -142,15 +153,13 @@ public class navigationActivity extends AppCompatActivity {
                                         startActivity(intent);
                                         finish();
                                     }
-
-
                                 });
                                 mediaPlayer.start(); // 안내 음성 시작
 
                             }
                             String predictions = json.getString("predictions");
                             String predictionsResponse = predictions;
-                            predictionsResponse = predictionsResponse.replaceAll("[^0-9]", "");
+                            predictionsResponse = predictionsResponse.replaceAll("[^a-zA-Z0-9]", "");
                             currLocation = findViewById(R.id.currentLocaiton);
                             currLocation.setText("현 위치: "+predictionsResponse);
 

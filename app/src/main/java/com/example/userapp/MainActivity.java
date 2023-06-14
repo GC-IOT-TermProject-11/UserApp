@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
                             JSONObject json = new JSONObject(responseBody);
                             String predictions = json.getString("predictions");
                             String serverResponse = predictions;
-                            serverResponse = serverResponse.replaceAll("[^0-9]", "");
+                            serverResponse = serverResponse.replaceAll("[^a-zA-Z0-9]", "");
                             currLocation = findViewById(R.id.resultTextView);
                             currLocation.setText(serverResponse);
                         } catch (JSONException e) {
@@ -270,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
                             String path = json.getString("shortestPath");
                             String serverResponse = path;
                             System.out.println("path is "+ path);
-                            serverResponse = serverResponse.replaceAll("[^0-9]", "");
+                            serverResponse = serverResponse.replaceAll("[^a-zA-Z0-9]", "");
                             Intent pathIntent = new Intent(getApplicationContext(), navigationActivity.class);
                             pathIntent.putExtra("shortestPath", path);
                             pathIntent.putExtra("destination", destination);
