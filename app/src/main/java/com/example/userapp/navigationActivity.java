@@ -43,10 +43,12 @@ public class navigationActivity extends AppCompatActivity {
     MediaPlayer mediaPlayer;
 
     private ImageView directionImage;
-    private TextView path;
+    private TextView showDirection;
+    private TextView directionCheck;
     private TextView Destination;
     private TextView distanceView;
-    private TextView directionView;
+
+    private TextView pathView;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,11 +57,14 @@ public class navigationActivity extends AppCompatActivity {
         //mainActivity에서 넘어온 경로를 출력
         Intent pathIntent = getIntent();
         directionImage = findViewById(R.id.directionImage);
-        path = findViewById(R.id.path);
+//        path = findViewById(R.id.path);
 //        path.setText(pathIntent.getStringExtra("shortestPath"));
         Destination = findViewById(R.id.destination);
         Destination.setText("목적지: " + pathIntent.getStringExtra("destination"));
         wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        showDirection = findViewById(R.id.showDirection);
+
+
 
         // 5초마다 와이파이 스캔 및 서버에 현위치 전송
         timer = new Timer();
@@ -170,6 +175,11 @@ public class navigationActivity extends AppCompatActivity {
                             distanceView = findViewById(R.id.distance);
                             distanceView.setText(distance+"m");
 
+                            String path = json.getString("shortestPath");
+//                            String predictionsResponse = predictions;
+//                            predictionsResponse = predictionsResponse.replaceAll("[\\[\\]\"]", "");
+                            pathView = findViewById(R.id.path);
+                            pathView.setText(path);
 
                             String direction = json.getString("direction");
                             if(direction.equalsIgnoreCase("직진")) {
